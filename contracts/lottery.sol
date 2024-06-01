@@ -10,6 +10,7 @@ contract lettery {
     }
 
     function enterLottery()  {
+        require(msg.value > i_entranceFee, "Not enough ETH")
         
     }
     // function pickRandomWinner(){}
