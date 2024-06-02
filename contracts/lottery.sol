@@ -11,15 +11,17 @@ contract lettery is VRFConsumerBaseV2 {
     uint256 private immutable i_entranceFee;    // i_ is used with immutable variables
     address payable[] private s_players;         // one player should win so addresses should be payable. s_ is used with storage variables
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
+    bytes32 immutable private i_gasLane;
 
 
     // events
     event LotteryEnter( address indexed player);
 
 
-    constructor(uint256 entranceFee, address vrfCoordinatorV2){
+    constructor(uint256 entranceFee, address vrfCoordinatorV2, bytes32 gasLane){
         i_entranceFee = entranceFee;
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
+        i_gasLane = gasLane;
     }
 
     function enterLottery() public payable {
@@ -33,7 +35,7 @@ contract lettery is VRFConsumerBaseV2 {
 
     function requestRandomWords() external {
         i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
-            keyHash,
+            i_gasLane,
             s_subscriptionId,
             requestConfirmations,
             callbackGasLimit,
