@@ -15,9 +15,11 @@ contract lettery is VRFConsumerBaseV2 {
     bytes64 immutable private i_subscriptionId;
     uint32 immutable private i_callbackGasLimit;
     uint16 constant private REQUEST_CONFIRMATIONS = 3;
+    uint32 constant private NUM_WORDS = 1;
 
     // events
     event LotteryEnter(address indexed player);
+    event RequestedLotteryWinner(uint256 indexed requestId);
 
     constructor(
         uint256 entranceFee,
@@ -42,12 +44,13 @@ contract lettery is VRFConsumerBaseV2 {
     }
 
     function requestRandomWords() external {
-        i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
             i_gasLane,
             i_subscriptionId,
             REQUEST_CONFIRMATIONS,
             i_callbackGasLimit,  // sets limit to how much fulfillRandomWords function can cost
-            numWords);
+            NUM_WORDS);
+        emit RequestedLotteryWinner(requestId);
     }
 
     function getPlayer(uint256 index) public view returns(address) {
