@@ -31,6 +31,15 @@ contract lettery is VRFConsumerBaseV2 {
         
     }
 
+    function requestRandomWords() external {
+        i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
+            keyHash,
+            s_subscriptionId,
+            requestConfirmations,
+            callbackGasLimit,
+            numWords);
+    }
+
     function getPlayer(uint256 index) public view returns(address) {
         return s_players[index];
     }
