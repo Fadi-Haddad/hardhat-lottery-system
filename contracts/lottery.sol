@@ -22,6 +22,7 @@ contract lettery is VRFConsumerBaseV2 {
     // events
     event LotteryEnter(address indexed player);
     event RequestedLotteryWinner(uint256 indexed requestId);
+    event WinnerPicked(address indexed winner);
 
     constructor(
         uint256 entranceFee,
@@ -63,6 +64,7 @@ contract lettery is VRFConsumerBaseV2 {
         if(!success){
             revert LotteryTransferFailed();
         }
+        emit WinnerPicked(recentWinner);
     }
 
     function getPlayer(uint256 index) public view returns(address) {
