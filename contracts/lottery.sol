@@ -52,6 +52,10 @@ contract lettery is VRFConsumerBaseV2 {
             NUM_WORDS);
         emit RequestedLotteryWinner(requestId);
     }
+    
+    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+
+    }
 
     function getPlayer(uint256 index) public view returns(address) {
         return s_players[index];
