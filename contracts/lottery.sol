@@ -16,6 +16,7 @@ contract lettery is VRFConsumerBaseV2 {
     uint32 immutable private i_callbackGasLimit;
     uint16 constant private REQUEST_CONFIRMATIONS = 3;
     uint32 constant private NUM_WORDS = 1;
+    address private s_recentWinner ;
 
     // events
     event LotteryEnter(address indexed player);
@@ -56,6 +57,8 @@ contract lettery is VRFConsumerBaseV2 {
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
+        s_recentWinner = recentWinner;
+        (bool success, ) = recentWinner.call{value: address(this).balance}("");
     }
 
     function getPlayer(uint256 index) public view returns(address) {
