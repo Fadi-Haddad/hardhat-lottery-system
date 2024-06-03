@@ -4,7 +4,8 @@ pragma solidity ^0.8.7;
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 
-error Lottery__NotEnoughEthEntered()
+error Lottery__NotEnoughEthEntered();
+error LotterytransferFailed();
 
 contract lettery is VRFConsumerBaseV2 {
     // State variables
@@ -59,6 +60,9 @@ contract lettery is VRFConsumerBaseV2 {
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        if(!success){
+            revert LotteryTransferFailed();
+        }
     }
 
     function getPlayer(uint256 index) public view returns(address) {
