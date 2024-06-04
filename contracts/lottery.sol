@@ -78,7 +78,11 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         if(!success){
             revert Lottery__LotterytransferFailed();
         }
-        emit WinnerPicked(recentWinner);
+        emit WinnerPick
+        ed(recentWinner);
+    }
+    function checkUpKeep(bytes calldata /*checkdata*/)external override {
+        bool isOpen = (s_lotteryState = LotteryState.OPEN);
     }
 
     function getPlayer(uint256 index) public view returns(address) {
