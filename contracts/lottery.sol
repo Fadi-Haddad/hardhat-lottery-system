@@ -73,6 +73,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
+        s_players = new address payable[](0);
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         if(!success){
             revert Lottery__LotterytransferFailed();
