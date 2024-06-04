@@ -6,9 +6,13 @@ import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.s
 import "@chainlink/contracts/src/v0.8/vrf/interfaces/KeeperCompatibleInterface.sol";
 
 error Lottery__NotEnoughEthEntered();
-error LotterytransferFailed();
+error Lottery__LotterytransferFailed();
+error Lottery__LotteryNotOpen();
 
 contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
+    // types:
+    enum LotteryState {OPEN, CALCULATING}  // enums are custom types
+
     // State variables
     uint256 private immutable i_entranceFee;    // i_ is used with immutable variables
     address payable[] private s_players;         // one player should win so addresses should be payable. s_ is used with storage variables
@@ -19,6 +23,8 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     uint16 constant private REQUEST_CONFIRMATIONS = 3;
     uint32 constant private NUM_WORDS = 1;
     address private s_recentWinner ;
+    LotteryState private s_lotteryState;  // represents the Lottery state (open, calculating)
+
 
     // events
     event LotteryEnter(address indexed player);
@@ -29,22 +35,26 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         uint256 entranceFee,
         address vrfCoordinatorV2,
         bytes32 gasLane,
-        uint64 subscriptionId
+        uint64 subscriptionId,
         UINT32 callbackGasLimit) {
         i_entranceFee = entranceFee;
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_gasLane = gasLane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
+        s_lotteryState = LotteryState.OPEN;
     }
 
     function enterLottery() public payable {
         // require(msg.value > i_entranceFee, "Not enough ETH") this is not gas efficient, instead we can use if with a custom error
-        if(msg.value< i_entranceFee) {revert Lottery__NotEnoughEthEntered();}
-        s_players.push(payable(msg.sender));   // msg.sender is not payable so we need to typecast it
+        if(msg.value< i_entranceFee) 
+        {revert Lottery__NotEnoughEthEntered();}
 
+        if(s_lotteryState!=LotteryState.OPEN) 
+        {revert Lottery__LotteryNotOpen();}
+
+        s_players.push(payable(msg.sender));   // msg.sender is not payable so we need to typecast it
         emit LotteryEnter(msg.sender);
-        
     }
 
     function requestRandomWords() external {
@@ -63,7 +73,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         s_recentWinner = recentWinner;
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         if(!success){
-            revert LotteryTransferFailed();
+            revert Lottery__LotterytransferFailed();
         }
         emit WinnerPicked(recentWinner);
     }
