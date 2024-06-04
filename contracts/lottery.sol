@@ -3,11 +3,12 @@ pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/vrf/interfaces/KeeperCompatibleInterface.sol";
 
 error Lottery__NotEnoughEthEntered();
 error LotterytransferFailed();
 
-contract lettery is VRFConsumerBaseV2 {
+contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // State variables
     uint256 private immutable i_entranceFee;    // i_ is used with immutable variables
     address payable[] private s_players;         // one player should win so addresses should be payable. s_ is used with storage variables
@@ -70,5 +71,4 @@ contract lettery is VRFConsumerBaseV2 {
     function getPlayer(uint256 index) public view returns(address) {
         return s_players[index];
     }
-    // function pickRandomWinner(){}
 }
