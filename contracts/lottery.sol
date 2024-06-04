@@ -25,6 +25,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     address private s_recentWinner ;
     LotteryState private s_lotteryState;  // represents the Lottery state (open, calculating)
     uint256 private s_lastTimeStamp;
+    uint256 private immutable i_interval;
 
 
     // events
@@ -37,7 +38,8 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         address vrfCoordinatorV2,
         bytes32 gasLane,
         uint64 subscriptionId,
-        uint32 callbackGasLimit) {
+        uint32 callbackGasLimit,
+        uint256 interval) {
         i_entranceFee = entranceFee;
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_gasLane = gasLane;
@@ -45,6 +47,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         i_callbackGasLimit = callbackGasLimit;
         s_lotteryState = LotteryState.OPEN;
         s_lastTimeStamp= block.timestamp;
+        i_interval = interval;
     }
 
     function enterLottery() public payable {
@@ -85,6 +88,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     }
     function checkUpKeep(bytes calldata /*checkdata*/)external override {
         bool isOpen = (s_lotteryState = LotteryState.OPEN);
+        bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
     }
 
     function getPlayer(uint256 index) public view returns(address) {
