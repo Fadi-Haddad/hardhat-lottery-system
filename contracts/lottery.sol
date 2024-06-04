@@ -58,6 +58,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     }
 
     function requestRandomWords() external {
+        s_lotteryState = LotteryState.CALCULATING;
         uint256 requestId = i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
             i_gasLane,
             i_subscriptionId,
@@ -68,6 +69,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     }
 
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+        s_lotteryState = LotteryState.OPEN;
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
