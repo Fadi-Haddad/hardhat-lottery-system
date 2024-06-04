@@ -89,6 +89,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function checkUpKeep(bytes calldata /*checkdata*/)external override {
         bool isOpen = (s_lotteryState = LotteryState.OPEN);
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
+        bool hasPlayers = (s_players.length>0);
     }
 
     function getPlayer(uint256 index) public view returns(address) {
