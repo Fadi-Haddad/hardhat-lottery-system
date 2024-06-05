@@ -86,11 +86,19 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         emit WinnerPick
         ed(recentWinner);
     }
-    function checkUpKeep(bytes calldata /*checkdata*/)external override {
+    function checkUpKeep (
+        bytes calldata /*checkdata*/
+        ) 
+        external override returns (
+        bool upKeepNeeded,
+        bytes memory /*performData*/            // used by checkUpKeep to do some other stuff after finishing.
+        ) {
         bool isOpen = (s_lotteryState = LotteryState.OPEN);
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = (s_players.length>0);
         bool hasBalance = address(this).balance>0;
+        upKeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
+
     }
 
     function getPlayer(uint256 index) public view returns(address) {
