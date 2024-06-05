@@ -8,6 +8,8 @@ import "@chainlink/contracts/src/v0.8/vrf/interfaces/KeeperCompatibleInterface.s
 error Lottery__NotEnoughEthEntered();
 error Lottery__LotterytransferFailed();
 error Lottery__LotteryNotOpen();
+error Lottery__UpKeepNotNeeded(uint256 balance, uint256 mumPlayers, uint256 lotteryState);
+
 
 contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // types:
@@ -62,7 +64,11 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         emit LotteryEnter(msg.sender);
     }
 
-    function requestRandomWords() external {
+    function performUpKeep(bytes callData /*performData*/) external override{
+        (bool upKeepNeeded, ) = checkUpKeep("");
+        if(!upKeepNeeded) {
+            revert Lottery__UpKeepNotNeeded(address(this).balance, s_players.length, LotteryState(s_lotteryState));
+        }
         s_lotteryState = LotteryState.CALCULATING;
         uint256 requestId = i_vrfCoordinator.requestRandomWords(  // obtained from chainlink documentation
             i_gasLane,
@@ -89,7 +95,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function checkUpKeep (
         bytes calldata /*checkdata*/
         ) 
-        external override returns (
+        public override returns (
         bool upKeepNeeded,
         bytes memory /*performData*/            // used by checkUpKeep to do some other stuff after finishing.
         ) {
