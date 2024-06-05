@@ -90,6 +90,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         bool isOpen = (s_lotteryState = LotteryState.OPEN);
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = (s_players.length>0);
+        bool hasBalance = address(this).balance>0;
     }
 
     function getPlayer(uint256 index) public view returns(address) {
