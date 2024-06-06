@@ -111,4 +111,10 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function getPlayer(uint256 index) public view returns(address) {
         return s_players[index];
     }
+    function getEntranceFee() public view returns(uint256) {
+        return i_entranceFee;
+    }
+    function getRecentWinner() public view returns(address) {
+        return s_recentWinner;
+    }
 }
