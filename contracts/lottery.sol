@@ -117,7 +117,7 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function getRecentWinner() public view returns(address) {
         return s_recentWinner;
     }
-    function getNumWords() public pure returns(address) { 
-        return NUM_WORDS;
+    function getNumWords() public pure returns(address) { // pure since function doesn't interact with contract variables(neither read nor write)
+        return NUM_WORDS;                                 // but deals only with constants we use pure
     }
 }
