@@ -120,4 +120,13 @@ contract lettery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function getNumWords() public pure returns(address) { // pure since function doesn't interact with contract variables(neither read nor write)
         return NUM_WORDS;                                 // but deals only with constants we use pure
     }
+        function getNumberOfPlayers() public view returns(address) {
+        return s_players.length;
+    }
+        function getLatestTimeStamp() public view returns(address) {
+        return s_lastTimeStamp;
+    }
+        function getRequestConfirmations() public view returns(address) {
+        return REQUEST_CONFIRMATIONS;
+    }
 }
